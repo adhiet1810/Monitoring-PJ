@@ -217,20 +217,22 @@ function computeSettlement(installments, totalAngsuran, pinjaman, tenor) {
   const tiSudah = paid.reduce((s, i) => s + i.transfer_inggi, 0);
   const ppjSudah = paid.reduce((s, i) => s + (i.profit_pj || 0) + (i.denda_pj || 0), 0);
 
+  // Check if any installment is "Lunas Dipercepat" — means early settlement accepted
+  const hasDipercepat = installments.some(i => i.status.includes('Dipercepat'));
+
   // Overall status
   let overallStatus;
   if (unpaid.length === 0) {
     overallStatus = 'settled';
+  } else if (hasDipercepat) {
+    // Dipercepat means loan is closed — remaining unpaid installments are waived
+    overallStatus = 'settled';
+    totalRemaining = 0;
   } else if (paid.length === 0) {
-    // Check for Lunas Dipercepat edge case
-    if (installments.some(i => LUNAS_SET.has(i.status))) {
-      overallStatus = 'settled';
-    } else {
-      overallStatus = 'remaining';
-    }
+    overallStatus = 'remaining';
   } else {
-    // Has both paid and unpaid — check dipercepat
-    if (totalAngsuran > 0 && totalPaid >= totalAngsuran - 1) {
+    // Has both paid and unpaid — check if accumulated payment covers total
+    if (totalAngsuran > 0 && totalPaid >= totalAngsuran) {
       overallStatus = 'settled';
       totalRemaining = 0;
     } else {

@@ -242,7 +242,7 @@ function renderKloterList() {
       const totalOut = group.reduce((s, n) => s + (n.total_remaining || 0), 0);
       const tiDone = group.reduce((s, n) => s + (n.total_transfer_inggi || 0), 0);
       const ppjDone = group.reduce((s, n) => s + (n.total_profit_pj || 0), 0);
-      return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 16px;padding:10px 14px;background:${color};border-radius:10px;margin-top:8px;font-size:0.82rem">
+      return `<div class="obligation-summary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px 16px;padding:10px 14px;background:${color};border-radius:10px;margin-top:8px;font-size:0.82rem">
         <div><span style="color:var(--muted)">Tagihan Bulan Ini</span><br><b style="color:var(--accent);font-size:1.05rem">${currency(monthlyAngsuran)}</b></div>
         <div><span style="color:var(--muted)">Transfer Inggi (bulan ini)</span><br><b style="color:var(--blue)">${currency(monthlyTI)}</b></div>
         <div><span style="color:var(--muted)">Profit PJ (bulan ini)</span><br><b style="color:var(--green)">${currency(monthlyPPJ)}</b></div>
@@ -294,7 +294,7 @@ function renderKloterList() {
     const kloterPPJSudah = activeNasabah.reduce((s, n) => s + (n.total_profit_pj || 0), 0);
     const kloterPPJBelum = activeNasabah.reduce((s, n) => s + (n.remaining_profit_pj || 0), 0);
     html += `<div class="sub-section" style="background:#f0e8df">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px 16px;font-size:0.85rem">
+        <div class="kloter-summary-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px 16px;font-size:0.85rem">
           <div>
             <span style="color:var(--muted);font-size:0.78rem">Keuntungan</span><br>
             <b>${currency(k.total_keuntungan)}</b>
@@ -382,11 +382,11 @@ function renderNasabahList(list, isSettledView) {
           return `
           <div class="inst-row${isUnpaid ? ' unpaid-row' : ''}">
             <span>${inst.month_label.replace('ANGSURAN ','')}</span>
-            <span>${inst.jatuh_tempo || '—'}</span>
-            <span>${inst.jumlah_bayar ? currency(inst.jumlah_bayar) : '—'}</span>
-            <span style="color:${isPaid ? 'var(--blue)' : '#7c3aed'};${isUnpaid ? 'font-style:italic;opacity:0.8' : ''}">${isPaid ? currency(inst.transfer_inggi) : (nextTI > 0 ? '~' + currency(nextTI) : '—')}</span>
-            <span style="color:${isPaid ? 'var(--green)' : '#059669'};${isUnpaid ? 'font-style:italic;opacity:0.8' : ''}">${isPaid && profitPJ > 0 ? currency(profitPJ) : (nextPPJ > 0 ? '~' + currency(nextPPJ) : '—')}</span>
-            <span>${instStatusPill(inst.status)}</span>
+            <span data-label="Jatuh Tempo">${inst.jatuh_tempo || '—'}</span>
+            <span data-label="Bayar">${inst.jumlah_bayar ? currency(inst.jumlah_bayar) : '—'}</span>
+            <span data-label="TI" style="color:${isPaid ? 'var(--blue)' : '#7c3aed'};${isUnpaid ? 'font-style:italic;opacity:0.8' : ''}">${isPaid ? currency(inst.transfer_inggi) : (nextTI > 0 ? '~' + currency(nextTI) : '—')}</span>
+            <span data-label="PPJ" style="color:${isPaid ? 'var(--green)' : '#059669'};${isUnpaid ? 'font-style:italic;opacity:0.8' : ''}">${isPaid && profitPJ > 0 ? currency(profitPJ) : (nextPPJ > 0 ? '~' + currency(nextPPJ) : '—')}</span>
+            <span data-label="Status">${instStatusPill(inst.status)}</span>
           </div>`;
         }).join('')}
         <div class="inst-row" style="border-top:1px solid var(--border);padding-top:6px;font-weight:600">
@@ -405,10 +405,10 @@ function renderNasabahList(list, isSettledView) {
       return `
         <div class="nasabah-row nasabah-row-settled ${hasInstallments ? 'clickable' : ''}">
           <span class="nama">${n.nama}</span>
-          <span class="amount">${currency(n.total_angsuran)}</span>
-          <span class="amount" style="color:var(--blue)">${currency(actualTI)}</span>
-          <span class="amount" style="color:var(--green)">${currency(actualPPJ)}</span>
-          <span class="status-col">${statusPill(n.overall_status)}</span>
+          <span class="amount" data-label="Total Angsuran">${currency(n.total_angsuran)}</span>
+          <span class="amount" data-label="Transfer Inggi" style="color:var(--blue)">${currency(actualTI)}</span>
+          <span class="amount" data-label="Profit PJ" style="color:var(--green)">${currency(actualPPJ)}</span>
+          <span class="status-col" data-label="Status">${statusPill(n.overall_status)}</span>
         </div>
         ${instHtml}`;
     } else {
@@ -421,11 +421,11 @@ function renderNasabahList(list, isSettledView) {
       return `
         <div class="nasabah-row nasabah-row-obligation ${hasInstallments ? 'clickable' : ''}">
           <span class="nama">${n.nama}</span>
-          <span class="amount" style="font-weight:600;color:var(--accent)">${currency(nextAng)}</span>
-          <span class="amount" style="color:var(--blue)">${currency(nextTI)}</span>
-          <span class="amount" style="color:var(--green)">${currency(nextPPJ)}</span>
-          <span class="amount${isOverdue ? ' overdue' : ''}">${jt !== '—' ? jt.slice(5) : '—'}</span>
-          <span class="amount" style="color:var(--muted);font-size:0.82rem">${n.total_remaining > 0 ? currency(n.total_remaining) : '—'}</span>
+          <span class="amount" data-label="Tagihan" style="font-weight:600;color:var(--accent)">${currency(nextAng)}</span>
+          <span class="amount" data-label="TI" style="color:var(--blue)">${currency(nextTI)}</span>
+          <span class="amount" data-label="PPJ" style="color:var(--green)">${currency(nextPPJ)}</span>
+          <span class="amount${isOverdue ? ' overdue' : ''}" data-label="Jatuh Tempo">${jt !== '—' ? jt.slice(5) : '—'}</span>
+          <span class="amount" data-label="Sisa" style="color:var(--muted);font-size:0.82rem">${n.total_remaining > 0 ? currency(n.total_remaining) : '—'}</span>
         </div>
         ${instHtml}`;
     }
