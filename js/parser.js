@@ -150,13 +150,17 @@ function parseKloterSheet(sheetName, rows) {
       // Transfer Inggi = Pokok + Profit Inggi + Denda Inggi
       const transferInggi = pokok + profitInggi + dendaInggi;
 
+      // "Sudah Dilunasi" with no payment is a sheet auto-fill error — treat as unpaid
+      const correctedStatus = (status.includes('Dilunasi') && jumlahBayar === 0)
+        ? 'Belum Bayar' : (status || 'Belum Bayar');
+
       installments.push({
         bulan: b + 1,
         month_label: monthLabels[b] || `ANGSURAN BULAN ${b + 1}`,
         jatuh_tempo: jatuhTempo,
         tgl_bayar: tglBayar,
         jumlah_bayar: jumlahBayar,
-        status: status || 'Belum Bayar',
+        status: correctedStatus,
         pokok, profit_inggi: profitInggi, profit_pj: profitPJ,
         denda, denda_inggi: dendaInggi, denda_pj: dendaPJ,
         transfer_inggi: transferInggi,
