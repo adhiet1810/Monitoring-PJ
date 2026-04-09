@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard PJ — Rekap per Kloter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header>
+  <h1>📚 Dashboard PJ — Rekap per Kloter</h1>
+  <span class="subtitle">Live dari Google Sheets</span>
+</header>
+
+<main>
+  <!-- Loading Spinner -->
+  <div class="loading-spinner" id="loadingSpinner">
+    <div class="spinner"></div>
+    <div id="progressText" style="color:var(--muted);font-size:0.9rem">Memuat data...</div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar" style="display:none" id="toolbar">
+    <div class="input-wrap">
+      <label>Pilih Penanggung Jawab</label>
+      <select id="pjSelect">
+        <option value="all">Semua PJ</option>
+      </select>
+    </div>
+    <div class="input-wrap">
+      <label>Filter Kloter</label>
+      <select id="kloterSelect">
+        <option value="all">Semua Kloter</option>
+      </select>
+    </div>
+    <div class="input-wrap">
+      <label>Filter Status</label>
+      <select id="statusSelect">
+        <option value="all">Semua Status</option>
+        <option value="settled">Lunas</option>
+        <option value="partial">Sebagian</option>
+        <option value="remaining">Belum Bayar</option>
+      </select>
+    </div>
+    <button class="btn secondary" id="btnReset">🔄 Reset</button>
+  </div>
+
+  <!-- PJ Summary Cards -->
+  <p class="section-title" style="display:none" id="titlePJ">📊 Ringkasan per Penanggung Jawab</p>
+  <div class="pj-summary" id="pjSummary"></div>
+
+  <!-- Grand Total -->
+  <div class="grand-total" id="grandTotal" style="display:none"></div>
+
+  <!-- Kloter Detail -->
+  <p class="section-title" style="margin-top:28px;display:none" id="titleKloter">📋 Detail per Kloter</p>
+  <div id="kloterList"></div>
+
+  <!-- Macet -->
+  <div id="macetSection"></div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
