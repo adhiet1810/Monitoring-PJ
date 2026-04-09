@@ -217,27 +217,25 @@ function computeSettlement(installments, totalAngsuran, pinjaman, tenor) {
   const tiSudah = paid.reduce((s, i) => s + i.transfer_inggi, 0);
   const ppjSudah = paid.reduce((s, i) => s + (i.profit_pj || 0) + (i.denda_pj || 0), 0);
 
-  // Check if any installment is "Lunas Dipercepat" — means early settlement accepted
-  const hasDipercepat = installments.some(i => i.status.includes('Dipercepat'));
+  // Gap between total angsuran and accumulated payments
+  const gap = totalAngsuran > 0 ? (totalAngsuran - totalPaid) / totalAngsuran : 0;
 
   // Overall status
   let overallStatus;
   if (unpaid.length === 0) {
     overallStatus = 'settled';
-  } else if (hasDipercepat) {
-    // Dipercepat means loan is closed — remaining unpaid installments are waived
+  } else if (totalAngsuran > 0 && totalPaid >= totalAngsuran) {
+    // Accumulated payments cover or exceed total — settled
+    overallStatus = 'settled';
+    totalRemaining = 0;
+  } else if (gap >= 0 && gap < 0.10) {
+    // Gap < 10%: early settlement with reduced interest (e.g. Dipercepat cases)
     overallStatus = 'settled';
     totalRemaining = 0;
   } else if (paid.length === 0) {
     overallStatus = 'remaining';
   } else {
-    // Has both paid and unpaid — check if accumulated payment covers total
-    if (totalAngsuran > 0 && totalPaid >= totalAngsuran) {
-      overallStatus = 'settled';
-      totalRemaining = 0;
-    } else {
-      overallStatus = 'partial';
-    }
+    overallStatus = 'partial';
   }
 
   // Expected per-period values from actual paid installments or sheet formulas
