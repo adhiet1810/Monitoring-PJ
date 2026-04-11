@@ -15,9 +15,11 @@ const KLOTER_SHEET_REGEX = /^Kloter\s+\d+\s+\w+\s+\d{4}$/i;
 /* Macet sheet */
 const MACET_SHEET = 'Sheet5';
 
-/* Known PJs — used to validate rows and filter junk */
+/* Known PJs — kept for reference/colour mapping only.
+   Parser auto-detects any PJ from the sheet, so new names (e.g. Vanny)
+   appear without needing an edit here. */
 const KNOWN_PJS = new Set([
-  'Marianingsih', 'Rani Nurrani', 'Inggi', 'Dewi', 'Dessry'
+  'Marianingsih', 'Rani Nurrani', 'Inggi', 'Dewi', 'Dessry', 'Vanny'
 ]);
 
 /* Statuses considered as "paid" */

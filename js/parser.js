@@ -119,9 +119,11 @@ function parseKloterSheet(sheetName, rows) {
     const nama = (row[1] || '').toString().trim();
     const pj = (row[2] || '').toString().trim();
 
-    // Validate: must have valid number (1–200), known PJ, and a name
+    // Validate: must have valid number (1–200), a non-empty PJ, and a name
+    // Note: we intentionally do NOT restrict PJ to KNOWN_PJS — any new PJ added
+    // to the Google Sheet (e.g. Vanny) is auto-detected.
     if (noVal < 1 || noVal > 200) continue;
-    if (!KNOWN_PJS.has(pj)) continue;
+    if (!pj || pj.length < 2) continue;
     if (!nama || nama.length < 2) continue;
 
     const pinjaman     = toNum(row[3]);   // D: Jumlah Pinjaman
